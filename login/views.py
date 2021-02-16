@@ -165,6 +165,20 @@ class StepPageView(
 	prev_page = None
 	next_page = 'steps_2'
 
+	def dispatch(self, request, *args, **kwargs):
+		user = self.request.user
+
+		basic_info = BaseAccountModel.objects.filter(
+			user=user
+		).first()
+		if basic_info:
+			if basic_info.is_data_complete():
+				return redirect(reverse(
+					'landing_page',
+				))
+
+		return super().dispatch(request, *args, **kwargs)
+
 	def get_object(self):
 		basic_account = BaseAccountModel.objects.filter(user=self.request.user)
 		if basic_account:
@@ -284,7 +298,7 @@ class SecondStepPageView(
 					'steps',
 				))
 
-		return super().dispatch(request, *args, **kwargs)
+		return super(SecondStepPageView, self).dispatch(request, *args, **kwargs)
 
 class ThirdStepPageView(
 	StepPageView,
@@ -305,7 +319,7 @@ class ThirdStepPageView(
 					'steps_2',
 				))
 
-		return super().dispatch(request, *args, **kwargs)
+		return super(ThirdStepPageView, self).dispatch(request, *args, **kwargs)
 
 
 class AccountDataAjax(
