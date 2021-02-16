@@ -10,7 +10,7 @@
 
 **Create virtual environment**
 
->     python3 -m venv myvenv
+>     python -m venv myvenv
 
 **Activate virtual environment**
 
