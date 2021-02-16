@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block page_body %}
+	<div id="login" class="col-md-6 col-md-offset-3">
+	<ul class="progressbar">
+		{% for step in steps %}
+			{% if step.active == True %}
+          	<li class="active"><a href="{{step.url}}">{{step.text}}</a></li>
+			{% else %}
+			<li><a href="">{{step.text}}</a></li>
+			{% endif %}
+        {% endfor %}
+    </ul>
+
+		<form method="POST" id="login_form">
+			{% csrf_token %}
+			<div class="container col-md-12">
+				<hr>
+				{% for field in form %}
+					<div class="form-group" id="username_form">
+				    {{ field|as_crispy_field }}
+					</div>
+				{% endfor %}
+			    <div style="float:right;">
+			    	{% if prev_page_url %}
+			      	<a href="{% url prev_page_url %}" type="button" class="btn btn-default">Previous</a>
+			     	{% endif %}
+			      	<button type="submit" class="btn btn-primary" name="next" id="next">Next</button>
+			    </div>
+			    <br><br>
+				<hr>
+			</div>
+		</form>
+		<form method="POST" id="logout">
+			{% csrf_token %}
+			<div class="container col-md-12">
+				<button type="submit" class="btn btn-info" name="logout" id="login_btn">Logout</button>
+			</div>
+		</form>
+	</div>
+{% endblock %}
+
+{% block js %}
+	<script>
+		$(".dateinput").datepicker({
+		    format: 'yyyy-mm-dd',
+		    autoclose: true
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block page_body %}
+	<div id="cont" class="col-md-6 col-md-offset-3">
+		<div class="row">
+			<div class="col-md-7">
+		      	<img src="https://icon-library.com/images/avatar-icon-images/avatar-icon-images-4.jpg" alt="Avatar" class="avatar">
+		    </div>
+		    <div class="col-md-5">
+				<table>
+					<tr>
+					    <td><strong>Name:</strong></td>
+					    <td id="td_name">{{object.full_name}}</td>
+					</tr>
+					<tr>
+					    <td><strong>Gender:</strong></td>
+					    <td id="td_gender">{{object.get_gender_display}}</td>
+					</tr>
+					<tr>
+					    <td><strong>Birthday:</strong></td>
+					    <td id="td_date">{{object.date_of_birth}}</td>
+					</tr>
+					<tr>
+					    <td><strong>Address:</strong></td>
+					    <td id="td_address">{{object.address}}</td>
+					</tr>
+					<tr>
+					    <td><strong>Email:</strong></td>
+					    <td id="td_email">{{object.email}}</td>
+					</tr>
+				</table>
+				<hr>
+				<button type="button" class="btn btn-info btn-lg" data-toggle="modal" data-target="#myModal" id="update_btn">Update Data</button>
+		    </div>
+		</div>
+	    <br><br>
+		<div class="row">
+			<div class="col-md-7">
+				<form method="POST">
+				{% csrf_token %}
+				<button type="submit" class="btn btn-info col-md-6 col-md-offset-3" id="login_btn">Logout</button>
+				</form>
+			</div>
+		</div>
+	</div>
+	<!-- Modal -->
+	<div class="modal fade" id="myModal" role="dialog">
+		<form class='modal-update-form' method='POST' action='.' enctype="multipart/form-data" data-url="{% url 'account_ajax' %}">
+		{% csrf_token %}
+		<div class="modal-dialog">
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Updating Data</h4>
+				</div>
+				<div class="modal-body">
+					{% for field in form %}
+					<div class="form-group">
+						{{ field|as_crispy_field }}
+					</div>
+					{% endfor %}
+				</div>
+				<div class="modal-footer">
+					<button type="submit" class="btn btn-primary modal-button">Save</button>
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+		</form>
+	</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+	$(".dateinput").datepicker({
+	    format: 'yyyy-mm-dd',
+	    autoclose: true
+	});
+
+	$('#update_btn').click(function(){
+        $.ajax({
+            type: 'GET',
+            url: '{% url "account_ajax" %}',
+            data: {
+                'pk': '{{object.pk}}',
+            },
+            success: function(data) {
+                save_handler(data);
+            },
+            error: function(data) {
+                error_handler();
+            }
+        });
+	})
+
+	$('.modal-update-form').submit(function(event){
+		event.preventDefault();
+		var form_data = $(this);
+		$.ajax({
+			type: 'POST',
+			url: '{% url "account_ajax" %}',
+			data: form_data.serialize(),
+			success: function(data) {
+				update_handler(data);
+			},
+			error: function(data) {
+				error_handler();
+			}
+		});
+
+	});
+
+    function error_handler(){}
+
+    function save_handler(data){
+        $('#id_first_name').val(data['f_name'])
+        $('#id_last_name').val(data['l_name'])
+        $('#id_gender').val(data['gender']).change()
+        $('#id_email').val(data['email'])
+        $('#id_date_of_birth').val(data['date_of_birth'])
+        $('#id_address').val(data['adrress'])
+    }
+
+    function update_handler(data){
+    	$('#myModal').modal('toggle')
+    	$('#td_name').html(data['name'])
+        $('#td_gender').html(data['gender'])
+        $('#td_email').html(data['email'])
+        $('#td_date').html(data['date_of_birth'])
+        $('#td_address').html(data['adrress'])
+    }
+</script>
+{% endblock %}

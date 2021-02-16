@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block page_body %}
+	<div id="login" class="col-md-6 col-md-offset-3">
+		<form method="POST" id="login_form">
+			{% csrf_token %}
+			<div class="container col-md-12">
+				<h1 id="header">{{login_type}}</h1>
+				<hr>
+				{% if messages %}
+				    {% for message in messages %}
+				    <div class="alert alert-info" role="alert">
+				      <div class="alert">{{ message|safe }}</div>
+				     </div>
+				    {% endfor %}
+				{% endif %}
+				{{ form.login_type.as_hidden }}
+				<div class="form-group" id="username_form">
+				    <label for="inputsm">Username</label>
+				    {{ form.username|as_crispy_field }}
+				</div>
+				<div class="form-group">
+				    <label for="inputsm">Password</label>
+				    {{ form.password|as_crispy_field }}
+				</div>
+				<div class="row">
+					<div class="col-md-12">
+						{% if login_type == 'Register' %}
+							<button type="submit" class="btn btn-info col-md-5 hidden" id="login_btn">Login</button>
+							<button type="button" class="btn btn-info col-md-5" id="back_button">Back</button>
+							<button type="submit" class="btn btn-info col-md-5 col-md-offset-2" id="create">Create</button>
+							<button type="button" class="btn btn-info col-md-5 col-md-offset-2 hidden" id="register_button">Register</button>
+						{% else %}
+							<button type="submit" class="btn btn-info col-md-5" id="login_btn">Login</button>
+							<button type="button" class="btn btn-info col-md-5 hidden" id="back_button">Back</button>
+							<button type="submit" class="btn btn-info col-md-5 col-md-offset-2 hidden" id="create">Create</button>
+							<button type="button" class="btn btn-info col-md-5 col-md-offset-2" id="register_button">Register</button>
+						{% endif %}
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+{% endblock %}
+
+{% block js %}
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+	<script type="text/javascript">
+		$("#register_button").click(function() {
+			$("#login").fadeOut();
+			$("#login").fadeIn("slow");
+			$('#header').html('Register')
+			$('#back_button').removeClass('hidden')
+			$('#create').removeClass('hidden')
+			$('#login_btn').addClass('hidden')
+			$('#register_button').addClass('hidden')
+			$('#id_login_type').val('Register')
+		});
+
+		$("#back_button").click(function() {
+			$("#login").fadeOut();
+			$("#login").fadeIn("slow");
+			$('#header').html('Login')
+			$('#back_button').addClass('hidden')
+			$('#create').addClass('hidden')
+			$('#login_btn').removeClass('hidden')
+			$('#register_button').removeClass('hidden')
+			$('#id_login_type').val('Login')
+		});
+
+	</script>
+{% endblock %}
